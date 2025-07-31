@@ -1,0 +1,8 @@
+*.sqlite*
+# Laravel
+/vendor
+/.env
+/.env.*.backup
+.env.backup
+.env.testing
+.env.local
