@@ -1,7 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 leading-tight text-center">
-        Attendance Record of {{ $employee}}
+           Attendance Record of {{ $employee->employee_name }} 
+
         </h2>
     </x-slot>
 

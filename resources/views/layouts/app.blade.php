@@ -33,7 +33,7 @@
                 <a href="{{ route('attendances.index') }}" class="block px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Attendance</a>
                 <a href="{{ route('employees.index') }}" class="block px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Employees</a>
                 <a href="{{ route('payrolls.index') }}" class="block px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Payrolls</a>
-                <a href="#" class="block px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Settings</a>
+                <!-- <a href="#" class="block px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Settings</a> -->
 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

@@ -53,9 +53,11 @@ class EmployeeController extends Controller
             ->with('success', 'Employee deleted successfully.');
     }
 
-    public function attendance(Employee $employee)
-    {
-        // You should create the employees/attendance.blade.php view
-        return view('employees.attendance', compact('employee'));
-    }
+   public function attendance(Employee $employee)
+{
+    $attendances = $employee->attendances()->get(); // Fetch all related attendances
+
+    return view('employees.attendance', compact('employee', 'attendances'));
+}
+
 }

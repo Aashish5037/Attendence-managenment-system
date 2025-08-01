@@ -6,6 +6,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PayrollController;
+use Illuminate\Support\Facades\Log;
+// In a route or controller
+//Log::info('Testing new log file.');
 
 Route::view('/', 'welcome')->name('welcome');
 
@@ -24,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('employees', EmployeeController::class);
 
     // View employee attendance (custom)
+    // Route::get('/employees/{id}/attendance', [EmployeeController::class, 'showAttendance'])->name('employees.attendance');
     Route::get('employees/{employee}/attendance', [EmployeeController::class, 'attendance'])->name('employees.attendance');
 
 

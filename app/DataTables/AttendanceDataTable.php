@@ -14,11 +14,9 @@ class AttendanceDataTable extends DataTable
      * @param mixed $query Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-  public function dataTable($query)
+   public function dataTable($query)
 {
-    $dataTable = new EloquentDataTable($query);
-
-    return $dataTable
+    return (new EloquentDataTable($query))
         ->addColumn('employee_name', function ($attendance) {
             return $attendance->employee?->employee_name ?? '-';
         })
@@ -76,19 +74,19 @@ class AttendanceDataTable extends DataTable
      *
      * @return array
      */
-   protected function getColumns()
-{
-    return [
-        'id' => ['title' => '#', 'searchable' => false],
-        'employee_name' => ['title' => 'Employee Name'],
-        'device_id' => ['title' => 'Device ID'],
-        'date' => ['title' => 'Date'],
-        'check_in' => ['title' => 'Check-in Time'],
-        'check_out' => ['title' => 'Check-out Time'],
-        'total_hours' => ['title' => 'Total Hours'],
-        'overtime_minutes' => ['title' => 'Overtime (min)'],
-    ];
-}
+    protected function getColumns()
+    {
+        return [
+            'id' => ['title' => '#', 'searchable' => false],
+            'employee_name' => ['title' => 'Employee Name'],
+            'device_id' => ['title' => 'Device ID'],
+            'date' => ['title' => 'Date'],
+            'check_in' => ['title' => 'Check-in Time'],
+            'check_out' => ['title' => 'Check-out Time'],
+            'total_hours' => ['title' => 'Total Hours'],
+            'overtime_minutes' => ['title' => 'Overtime (min)'],
+        ];
+    }
 
 
     /**
@@ -96,10 +94,8 @@ class AttendanceDataTable extends DataTable
      *
      * @return string
      */
- public function filename(): string
-{
-    return 'attendances_datatable_' . time();
-}
-
-
+    public function filename(): string
+    {
+        return 'attendances_datatable_' . time();
+    }
 }
