@@ -13,7 +13,7 @@ class Attendance extends Model
     use HasFactory;
 
     protected $fillable = [
-        'employee_id', // foreign key to employes table
+        'employee_id', // foreign key to employees table
         'device_id',   // nullable string, now seeded
         'date',
         'check_in',

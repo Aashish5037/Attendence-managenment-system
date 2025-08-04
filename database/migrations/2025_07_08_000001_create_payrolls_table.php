@@ -20,7 +20,7 @@ return new class extends Migration
             // Tax and SSF columns removed
             $table->timestamps();
 
-            $table->foreign('employee_id')->references('id')->on('employes')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
         });
     }
 

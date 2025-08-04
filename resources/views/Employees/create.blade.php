@@ -11,28 +11,28 @@
 
             <input 
                 type="text" 
-                name="name" 
+                name="employee_name" 
                 placeholder="Full Name" 
                 class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100" 
                 required>
 
             <input 
                 type="email" 
-                name="email" 
+                name="employee_email" 
                 placeholder="Email" 
                 class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100" 
                 required>
 
             <input 
                 type="text" 
-                name="position" 
+                name="employee_position" 
                 placeholder="Position" 
                 class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100" 
                 required>
 
             <input 
                 type="number" 
-                name="hourly_pay" 
+                name="employee_Hourly_pay" 
                 placeholder="Hourly Pay" 
                 step="0.01" 
                 class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100" 
@@ -40,7 +40,7 @@
 
             <input 
                 type="number" 
-                name="overtime_pay" 
+                name="employee_overtime_pay" 
                 placeholder="Overtime Pay" 
                 step="0.01" 
                 class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100" 
@@ -48,7 +48,7 @@
 
             <input 
                 type="text" 
-                name="biometric_id" 
+                name="employee_biometric_id" 
                 placeholder="Biometric ID" 
                 class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100" 
                 required>

@@ -14,7 +14,7 @@ class EmployeeFactory extends Factory
         $Hourly = $this->faker->randomFloat(2, 300, 1200);
 
 
-        //   $gmailPrefix = 'aashishkhanal503'; 
+        //   $gmailPrefix = 'emailexample'; 
 
         return [
             'employee_biometric_id' => $this->faker->unique()->numerify('EMP####'),

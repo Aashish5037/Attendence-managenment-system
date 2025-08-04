@@ -22,20 +22,36 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-        Employee::create($request->all());
+        $validated = $request->validate([
+            'employee_name' => 'required|string|max:255',
+            'employee_email' => 'required|email|unique:employees,employee_email',
+            'employee_position' => 'required|string|max:255',
+            'employee_Hourly_pay' => 'required|numeric',
+            'employee_overtime_pay' => 'required|numeric',
+            'employee_biometric_id' => 'required|string|unique:employees,employee_biometric_id',
+        ]);
+
+        Employee::create($validated);
 
         return redirect()->route('employees.index')
             ->with('success', 'Employee created successfully.');
     }
 
-    public function edit(Employee $employee)
+    public function edit($id)
     {
+        $employee = Employee::findOrFail($id);
         return view('employees.edit', compact('employee'));
     }
 
     public function update(Request $request, Employee $employee)
     {
-        $employee->update($request->all());
+        $validated = $request->validate([
+            'employee_position' => 'required|string|max:255',
+            'employee_Hourly_pay' => 'required|numeric',
+            'employee_overtime_pay' => 'required|numeric',
+        ]);
+
+        $employee->update($validated);
 
         return redirect()->route('employees.index')
             ->with('success', 'Employee updated successfully.');
@@ -53,11 +69,10 @@ class EmployeeController extends Controller
             ->with('success', 'Employee deleted successfully.');
     }
 
-   public function attendance(Employee $employee)
-{
-    $attendances = $employee->attendances()->get(); // Fetch all related attendances
+    public function attendance(Employee $employee)
+    {
+        $attendances = $employee->attendances()->get();
 
-    return view('employees.attendance', compact('employee', 'attendances'));
-}
-
+        return view('employees.attendance', compact('employee', 'attendances'));
+    }
 }

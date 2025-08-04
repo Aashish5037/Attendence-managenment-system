@@ -29,14 +29,18 @@
     @endpush
 </x-app-layout>
 <!-- Delete Confirmation Modal -->
+<!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white dark:bg-gray-800 p-6 rounded shadow w-96">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Confirm Deletion</h2>
         <form id="deleteForm" method="POST" action="">
             @csrf
             @method('DELETE')
-            <label class="block mb-2 text-sm">Enter your password:</label>
-            <input type="password" name="password" class="w-full mb-4 p-2 border rounded" required>
+
+            <label for="password" class="block text-sm mb-1 text-gray-700 dark:text-gray-300">Enter your password:</label>
+            <input type="password" name="password" id="password"
+                   class="w-full p-2 border border-gray-300 rounded mb-4 dark:bg-gray-700 dark:text-white" required>
+
             <div class="flex justify-end">
                 <button type="button" onclick="closeDeleteModal()" class="mr-2 px-4 py-2 bg-gray-300 rounded">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">Delete</button>
@@ -46,9 +50,10 @@
 </div>
 
 <script>
-    function openDeleteModal(id) {
-        const form = document.getElementById('deleteForm');
-        form.action = '/employees/' + id;
+    function openDeleteModal(button) {
+        let id = button.dataset.id; // Get ID from button
+        let form = document.getElementById('deleteForm');
+        form.action = '/employees/' + id; // Set form action
         document.getElementById('deleteModal').classList.remove('hidden');
     }
 
@@ -56,4 +61,5 @@
         document.getElementById('deleteModal').classList.add('hidden');
     }
 </script>
+
 

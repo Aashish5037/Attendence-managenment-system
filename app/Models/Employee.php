@@ -10,7 +10,7 @@ class Employee extends Model
 {
     use SoftDeletes;
     use HasFactory;
-    protected $table = 'employes';
+    protected $table = 'employees';
 
     protected $fillable = [
         'employee_biometric_id',
