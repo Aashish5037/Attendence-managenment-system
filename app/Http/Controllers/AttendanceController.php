@@ -26,23 +26,31 @@ class AttendanceController extends Controller
 
     // Update attendance record after edit
     public function update(Request $request, Attendance $attendance)
-    {
-        $request->validate([
-            'check_in' => 'required|date_format:Y-m-d\TH:i',
-            'check_out' => 'required|date_format:Y-m-d\TH:i|after:check_in',
-        ]);
+{
+    $request->validate([
+        'attendance_status' => 'required|in:present,absent',
+        'check_in' => 'required_if:attendance_status,present|date_format:Y-m-d\TH:i',
+        'check_out' => 'required_if:attendance_status,present|date_format:Y-m-d\TH:i|after:check_in',
+    ]);
 
-        // Convert datetime-local input to time format stored in DB
+    $attendance->attendance_status = $request->attendance_status;
+
+    if ($request->attendance_status === 'absent') {
+        $attendance->check_in = null;
+        $attendance->check_out = null;
+        $attendance->total_hours = null;
+        $attendance->overtime_minutes = 0;
+    } else {
         $attendance->check_in = Carbon::parse($request->check_in)->format('H:i:s');
         $attendance->check_out = Carbon::parse($request->check_out)->format('H:i:s');
-
-        // Calculate total hours and overtime based on new check_in/out
         $this->calculateWorkingHours($attendance);
-
-        $attendance->save();
-
-        return redirect()->route('attendances.index')->with('success', 'Attendance updated successfully.');
     }
+
+    $attendance->save();
+
+    return redirect()->route('attendances.index')->with('success', 'Attendance updated successfully.');
+}
+
 // Calculate total hours and overtime for attendance
   protected function calculateWorkingHours(Attendance $attendance): void
 {

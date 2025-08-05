@@ -4,19 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Payroll;
 use App\DataTables\PayrollDataTable;
+use Illuminate\Support\Carbon;
 
 class PayrollController extends Controller
 {
     public function index(PayrollDataTable $dataTable)
     {
-        // Calculate payroll amounts before showing table
         $payrolls = Payroll::with('employee')->get();
+
         foreach ($payrolls as $payroll) {
             $this->calculatePayments($payroll);
             $payroll->save();
         }
 
-        return $dataTable->render('payrolls.index');
+        // Get today's date
+        $today = Carbon::today()->toDateString();
+
+        // Sum of net_pay where period_date = today
+        $payrollToday = Payroll::whereDate('period_date', $today)->sum('net_pay');
+
+        // Pass value to the view
+        return $dataTable->render('payrolls.index', [
+            'payrollToday' => $payrollToday,
+        ]);
     }
 
     protected function calculatePayments(Payroll $payroll): void
@@ -28,15 +38,18 @@ class PayrollController extends Controller
             ->whereDate('date', $payroll->period_date)
             ->first();
 
-        $hourlyRate = $employee->employee_Hourly_pay ?? 0;
-        $totalHours = $attendance?->total_hours ?? 0;
-        $overtimeMinutes = $attendance?->overtime_minutes ?? 0;
+        if (!$attendance || $attendance->attendance_status === 'absent') {
+            $payroll->overtime_pay = 0;
+            $payroll->net_pay = 0;
+            return;
+        }
 
-        // Regular Pay
+        $hourlyRate = $employee->employee_Hourly_pay ?? 0;
+        $totalHours = $attendance->total_hours ?? 0;
+        $overtimeMinutes = $attendance->overtime_minutes ?? 0;
+
         $regularHours = min(8, $totalHours);
         $regularPay = $hourlyRate * $regularHours;
-
-        // Overtime Pay (1.5x hourly rate)
         $overtimePay = ($overtimeMinutes / 60) * $hourlyRate * 1.5;
 
         $payroll->overtime_pay = $overtimePay;

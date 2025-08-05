@@ -13,27 +13,47 @@ class AttendanceFactory extends Factory
 
     public function definition(): array
     {
-        // Random check-in between 08:00 and 10:00
-        $checkInHour = $this->faker->numberBetween(8, 10);
-        $checkIn = sprintf('%02d:%02d:00', $checkInHour, $this->faker->numberBetween(0, 59));
+        // Randomly decide if the attendance is present or absent
+        $isPresent = $this->faker->boolean(80); // 80% chance present, 20% absent
 
-        // Check-out 8 to 10 hours later
-        $checkOutHour = $checkInHour + $this->faker->numberBetween(8, 10);
-        $checkOut = sprintf('%02d:%02d:00', $checkOutHour, $this->faker->numberBetween(0, 59));
+        if ($isPresent) {
+            // Random check-in between 08:00 and 10:00
+            $checkInHour = $this->faker->numberBetween(8, 10);
+            $checkInMinute = $this->faker->numberBetween(0, 59);
+            $checkIn = sprintf('%02d:%02d:00', $checkInHour, $checkInMinute);
 
-        // Calculate total hours as decimal
-        $in = Carbon::createFromTimeString($checkIn);
-        $out = Carbon::createFromTimeString($checkOut);
-        $totalHours = $in->diffInMinutes($out) / 60;
+            // Check-out 8 to 10 hours later
+            $checkOutHour = $checkInHour + $this->faker->numberBetween(8, 10);
+            $checkOutMinute = $this->faker->numberBetween(0, 59);
+            $checkOut = sprintf('%02d:%02d:00', $checkOutHour, $checkOutMinute);
 
-        return [
-            'employee_id' => Employee::inRandomOrder()->value('id') ?? 1,
-            'device_id' => 'DEVICE-001',
-            'date' => now()->toDateString(), // override in seeder for specific date range
-            'check_in' => $checkIn,
-            'check_out' => $checkOut,
-            'total_hours' => round($totalHours, 2),
-            'overtime_minutes' => 0, // will update in seeder if needed
-        ];
+            // Calculate total hours as decimal
+            $in = Carbon::createFromTimeString($checkIn);
+            $out = Carbon::createFromTimeString($checkOut);
+            $totalHours = $in->diffInMinutes($out) / 60;
+
+            return [
+                'employee_id' => Employee::inRandomOrder()->value('id') ?? 1,
+                'device_id' => 'DEVICE-001',
+                'date' => now()->toDateString(),
+                'check_in' => $checkIn,
+                'check_out' => $checkOut,
+                'total_hours' => round($totalHours, 2),
+                'overtime_minutes' => 0,
+                'attendance_status' => 'present', // new status column
+            ];
+        } else {
+            // Absent - all times null
+            return [
+                'employee_id' => Employee::inRandomOrder()->value('id') ?? 1,
+                'device_id' => 'DEVICE-001',
+                'date' => now()->toDateString(),
+                'check_in' => null,
+                'check_out' => null,
+                'total_hours' => null,
+                'overtime_minutes' => 0,
+                'attendance_status' => 'absent', // new status column
+            ];
+        }
     }
 }

@@ -18,8 +18,8 @@ return new class extends Migration
             $table->date('date');
             $table->time('check_in')->nullable();
             $table->time('check_out')->nullable();
-            $table->decimal('total_hours', 5, 2)->default(0);
-            $table->integer('overtime_minutes')->default(0);
+            $table->decimal('total_hours', 5, 2)->nullable()->default(0);
+            $table->integer('overtime_minutes')->nullable()->default(0);
             $table->timestamps();
 
             $table->foreign('employee_id')

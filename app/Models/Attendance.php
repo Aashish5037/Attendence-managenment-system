@@ -20,6 +20,7 @@ class Attendance extends Model
         'check_out',
         'total_hours',
         'overtime_minutes',
+        'attendance_status', // new status column
     ];
 
     // Automatically calculate overtime_minutes on save

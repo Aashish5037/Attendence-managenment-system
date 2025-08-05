@@ -6,19 +6,17 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PayrollController;
-use Illuminate\Support\Facades\Log;
-// In a route or controller
-//Log::info('Testing new log file.');
 
+// Public route
 Route::view('/', 'welcome')->name('welcome');
 
-// Dashboard route using controller for flexibility
+// Dashboard route (main dashboard)
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    // Profile routes
+    // Profile management
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -26,20 +24,21 @@ Route::middleware('auth')->group(function () {
     // Employees resource routes
     Route::resource('employees', EmployeeController::class);
 
-    // View employee attendance (custom)
-    // Route::get('/employees/{id}/attendance', [EmployeeController::class, 'showAttendance'])->name('employees.attendance');
+    // Employee attendance custom route
     Route::get('employees/{employee}/attendance', [EmployeeController::class, 'attendance'])->name('employees.attendance');
 
-
-    // Attendances resource routes
+    // Attendance resource routes
     Route::resource('attendances', AttendanceController::class);
 
-    // Edit and update attendance overrides (optional, but good to keep)
+    // Attendance edit and update overrides
     Route::get('/attendances/{attendance}/edit', [AttendanceController::class, 'edit'])->name('attendances.edit');
     Route::put('/attendances/{attendance}', [AttendanceController::class, 'update'])->name('attendances.update');
 
-    // Payroll index route
+    // Payroll routes
     Route::get('/payrolls', [PayrollController::class, 'index'])->name('payrolls.index');
+
+    // Optional: Attendance dashboard with a different route if needed
+    // Route::get('/attendance-dashboard', [AttendanceController::class, 'dashboard'])->name('attendance.dashboard');
 });
 
 require __DIR__.'/auth.php';

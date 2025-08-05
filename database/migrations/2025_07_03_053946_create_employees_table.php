@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('employee_Hourly_pay', 10, 2)->nullable();
             $table->decimal('employee_overtime_pay', 10, 2)->nullable();
             $table->timestamps();
-            $table->softDeletes(); // Add soft deletes column
+           $table->softDeletes(); // Add soft deletes column
         });
     }
 
