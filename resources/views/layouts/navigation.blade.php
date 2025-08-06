@@ -1,5 +1,3 @@
-
-
 <nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,7 +43,7 @@
                             @csrf
 
                             <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
+                                onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
@@ -86,16 +84,25 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
+                <!-- Logout Form -->
+                <!-- Logout Link -->
+                <a href="#"
+                    onclick="event.preventDefault(); confirmLogout();"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Log Out
+                </a>
 
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
+                <!-- Hidden Logout Form -->
+                <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Are you sure you want to logout?');">
+                    @csrf
+                    <button type="submit">Logout</button>
                 </form>
+
+
+
+
+
+
             </div>
         </div>
     </div>

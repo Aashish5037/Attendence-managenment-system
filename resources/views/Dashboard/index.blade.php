@@ -21,34 +21,34 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
                     <!-- Info Boxes -->
-                   <div class="flex flex-wrap lg:flex-nowrap gap-6 mb-8 items-stretch">
+                    <div class="flex flex-wrap lg:flex-nowrap gap-6 mb-8 items-stretch">
 
-    <x-info-box
-        label="Total Employees"
-        :value="$totalEmployees"
-        icon="fas fa-users"
-        color="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-900"
-        class="flex-shrink-0" />
+                        <x-info-box
+                            label="Total Employees"
+                            :value="$totalEmployees"
+                            icon="fas fa-users"
+                            color="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-900"
+                            class="flex-shrink-0" />
 
-    <x-info-box
-        label="Today's Payroll"
-        :value="'Rs. ' . number_format($payrollToday, 2)"
-        icon="fas fa-money-bill-wave"
-        color="bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-700 dark:to-purple-900"
-        class="flex-shrink-0" />
+                        <x-info-box
+                            label="Today's Payroll"
+                            :value="'Rs. ' . number_format($payrollToday, 2)"
+                            icon="fas fa-money-bill-wave"
+                            color="bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-700 dark:to-purple-900"
+                            class="flex-shrink-0" />
 
-    <x-info-box
-        label="Attendance / Absence Rate"
-        :value="
+                        <x-info-box
+                            label="Attendance / Absence Rate"
+                            :value="
             ($totalEmployees > 0
                 ? round(($presentCount / $totalEmployees) * 100, 1) . '% / ' . round(($absentCount / $totalEmployees) * 100, 1) . '%'
                 : '0% / 0%')
         "
-    
-        color="bg-gradient-to-r from-green-500 to-red-500 dark:from-green-700 dark:to-red-700"
-        class="flex-shrink-0" />
 
-</div>
+                            color="bg-gradient-to-r from-green-500 to-red-500 dark:from-green-700 dark:to-red-700"
+                            class="flex-shrink-0" />
+
+                    </div>
 
 
                     @if($hasData)
@@ -163,7 +163,9 @@
                                     position: 'bottom',
                                     labels: {
                                         padding: 20,
-                                        font: { size: 14 },
+                                        font: {
+                                            size: 14
+                                        },
                                         usePointStyle: true
                                     }
                                 },
@@ -219,21 +221,37 @@
                                     beginAtZero: true,
                                     ticks: {
                                         stepSize: 1,
-                                        font: { size: 12 }
+                                        font: {
+                                            size: 12
+                                        }
                                     },
-                                    grid: { color: 'rgba(156, 163, 175, 0.3)' }
+                                    grid: {
+                                        color: 'rgba(156, 163, 175, 0.3)'
+                                    }
                                 },
                                 x: {
-                                    ticks: { font: { size: 12 } },
-                                    grid: { display: false }
+                                    ticks: {
+                                        font: {
+                                            size: 12
+                                        }
+                                    },
+                                    grid: {
+                                        display: false
+                                    }
                                 }
                             },
                             plugins: {
                                 legend: {
                                     position: 'top',
-                                    labels: { usePointStyle: true, padding: 20 }
+                                    labels: {
+                                        usePointStyle: true,
+                                        padding: 20
+                                    }
                                 },
-                                tooltip: { mode: 'index', intersect: false }
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false
+                                }
                             },
                             interaction: {
                                 mode: 'nearest',
