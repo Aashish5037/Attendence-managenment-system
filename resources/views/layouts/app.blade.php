@@ -35,10 +35,17 @@
                 <a href="{{ route('payrolls.index') }}" class="block px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Payrolls</a>
                 <!-- <a href="#" class="block px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Settings</a> -->
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="w-full text-left px-4 py-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Logout</button>
-                </form>
+               <form method="POST" action="{{ route('logout') }}" id="logout-form">
+    @csrf
+    <x-responsive-nav-link href="{{ route('logout') }}"
+        onclick="event.preventDefault(); 
+            if (confirm('Are you sure you want to log out?')) {
+                document.getElementById('logout-form').submit();
+            }">
+        {{ __('Log Out') }}
+    </x-responsive-nav-link>
+</form>
+
             </nav>
         </aside>
 

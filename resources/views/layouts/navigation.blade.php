@@ -39,14 +39,15 @@
                         </x-dropdown-link>
 
                         <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}" id="logout-form">
                             @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                                this.closest('form').submit();">
+                            <x-responsive-nav-link href="{{ route('logout') }}"
+                                onclick="event.preventDefault(); 
+            if (confirm('Are you sure you want to log out?')) {
+                document.getElementById('logout-form').submit();
+            }">
                                 {{ __('Log Out') }}
-                            </x-dropdown-link>
+                            </x-responsive-nav-link>
                         </form>
                     </x-slot>
                 </x-dropdown>
@@ -84,22 +85,7 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
-                <!-- Logout Form -->
-                <!-- Logout Link -->
-                <a href="#"
-                    onclick="event.preventDefault(); confirmLogout();"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Log Out
-                </a>
-
-                <!-- Hidden Logout Form -->
-                <form method="POST" action="{{ route('logout') }}" onsubmit="return confirm('Are you sure you want to logout?');">
-                    @csrf
-                    <button type="submit">Logout</button>
-                </form>
-
-
-
+                <!-- Authentication -->
 
 
 
