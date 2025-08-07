@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel') }}</title> 
 
     <!-- DataTables Core CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
@@ -23,7 +23,7 @@
 
 <body class="bg-background text-gray-900 dark:bg-gray-900 dark:text-white font-sans">
 
-    <div class="min-h-screen flex">
+    <div class=" min-h-screen flex">
 
         <!-- Sidebar -->
         <aside class="w-64 bg-white dark:bg-gray-800 border-r">

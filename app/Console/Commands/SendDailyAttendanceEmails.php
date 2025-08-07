@@ -44,7 +44,8 @@ class SendDailyAttendanceEmails extends Command
         // foreach ($employees as $employee) {
         //     $attendance = $employee->attendances->first();
 
-        //     if ($attendance && !empty($employee->employee_email)) {
+        //                if ($attendance->attendance_status === 'present' && !empty($employee->employee_email)) {
+ 
         //         try {
         //             $payroll = Payroll::where('employee_id', $employee->id)
         //                 ->where('period_date', $date)
