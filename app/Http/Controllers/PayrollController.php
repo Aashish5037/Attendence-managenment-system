@@ -10,25 +10,17 @@ class PayrollController extends Controller
 {
     public function index(PayrollDataTable $dataTable)
     {
-        $payrolls = Payroll::with('employee')->get();
-
-        foreach ($payrolls as $payroll) {
-            $this->calculatePayments($payroll);
-            $payroll->save();
-        }
-
-        // Get today's date
+        // Just calculate today's net pay total — no recalculation for all rows
         $today = Carbon::today()->toDateString();
 
-        // Sum of net_pay where period_date = today
         $payrollToday = Payroll::whereDate('period_date', $today)->sum('net_pay');
 
-        // Pass value to the view
         return $dataTable->render('payrolls.index', [
             'payrollToday' => $payrollToday,
         ]);
     }
 
+    // Still available to call manually when needed (e.g., cron job, command, or observer)
     protected function calculatePayments(Payroll $payroll): void
     {
         $employee = $payroll->employee;

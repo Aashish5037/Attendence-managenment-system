@@ -14,17 +14,22 @@ class AttendanceDataTable extends DataTable
      * @param mixed $query Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-   public function dataTable($query)
-{
-    return (new EloquentDataTable($query))
-        ->addColumn('employee_name', function ($attendance) {
-            return $attendance->employee?->employee_name ?? '-';
-        })
-        ->addColumn('action', function ($attendance) {
-            return '<a href="' . route('attendances.edit', $attendance->id) . '" class="btn btn-sm btn-primary">Edit</a>';
-        })
-        ->rawColumns(['action']);
-}
+    public function dataTable($query)
+    {
+        return (new EloquentDataTable($query))
+            ->addColumn('employee_name', function ($attendance) {
+                return $attendance->employee?->employee_name ?? '-';
+            })
+            ->filterColumn('employee_name', function ($query, $keyword) {
+                $query->whereHas('employee', function ($q) use ($keyword) {
+                    $q->where('employee_name', 'like', "%{$keyword}%");
+                });
+            })
+            ->addColumn('action', function ($attendance) {
+                return '<a href="' . route('attendances.edit', $attendance->id) . '" class="btn btn-sm btn-primary">Edit</a>';
+            })
+            ->rawColumns(['action']);
+    }
 
 
 
@@ -78,7 +83,7 @@ class AttendanceDataTable extends DataTable
     {
         return [
             'id' => ['title' => '#', 'searchable' => false],
-            'employee_name' => ['title' => 'Employee Name'],
+            'employee_name' => ['title' => 'Employee Name', 'searchable' => true],
             'device_id' => ['title' => 'Device ID'],
             'date' => ['title' => 'Date'],
             'check_in' => ['title' => 'Check-in Time'],
