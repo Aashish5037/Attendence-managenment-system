@@ -27,6 +27,7 @@ class AttendanceDataTable extends DataTable
             })
             ->addColumn('action', function ($attendance) {
                 return '<a href="' . route('attendances.edit', $attendance->id) . '" class="btn btn-sm btn-primary">Edit</a>';
+                
             })
             ->rawColumns(['action']);
     }
