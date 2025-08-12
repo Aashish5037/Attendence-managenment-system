@@ -46,10 +46,10 @@ class EmployeeAttendanceDataTable extends DataTable
         return [
             'id' => ['searchable' => false],
             'date' => ['title' => 'Date'],
-            'check_in' => ['title' => 'Check-in'],
-            'check_out' => ['title' => 'Check-out'],
-            'total_hours' => ['title' => 'Total Hours'],
-            'overtime_minutes' => ['title' => 'Overtime (min)'],
+            'check_in' => ['title' => 'Check-in', 'searchable' => false],
+            'check_out' => ['title' => 'Check-out', 'searchable' => false],
+            'total_hours' => ['title' => 'Total Hours', 'searchable' => false],
+            'overtime_minutes' => ['title' => 'Overtime (min)', 'searchable' => false],
         ];
     }
 

@@ -41,7 +41,14 @@
                 $('#attendanceTable').DataTable({
                     dom: 'Bfrtip',
                     buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-                    responsive: true
+                    responsive: true,
+                                columnDefs: [
+                {
+                    targets: [1, 2, 3, 4], // Check In, Check Out, Total Hours, Overtime columns
+                    searchable: false     // Disable searching on these columns
+                }
+            ]
+
                 });
             });
         </script>

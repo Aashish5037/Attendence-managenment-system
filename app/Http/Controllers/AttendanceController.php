@@ -18,7 +18,6 @@ class AttendanceController extends Controller
     // Show edit form for a single attendance record
     public function edit(Attendance $attendance)
     {
-        // Load related employee data if needed in the view
         $attendance->load('employee');
 
         return view('attendances.edit', compact('attendance'));
@@ -26,54 +25,59 @@ class AttendanceController extends Controller
 
     // Update attendance record after edit
     public function update(Request $request, Attendance $attendance)
-{
-    $request->validate([
-        'attendance_status' => 'required|in:present,absent',
-        'check_in' => 'required_if:attendance_status,present|date_format:Y-m-d\TH:i',
-        'check_out' => 'required_if:attendance_status,present|date_format:Y-m-d\TH:i|after:check_in',
-    ]);
+    {
+        $request->validate([
+            'status' => 'required|in:present,absent',
+            'check_in' => 'required_if:status,present|date_format:H:i',
+            'check_out' => 'required_if:status,present|date_format:H:i|after:check_in',
+        ]);
 
-    $attendance->attendance_status = $request->attendance_status;
+        $attendance->attendance_status = $request->status;
 
-    if ($request->attendance_status === 'absent') {
-        $attendance->check_in = null;
-        $attendance->check_out = null;
-        $attendance->total_hours = null;
-        $attendance->overtime_minutes = 0;
-    } else {
-        $attendance->check_in = Carbon::parse($request->check_in)->format('H:i:s');
-        $attendance->check_out = Carbon::parse($request->check_out)->format('H:i:s');
-        $this->calculateWorkingHours($attendance);
+        if ($request->status === 'absent') {
+            $attendance->check_in = null;
+            $attendance->check_out = null;
+            $attendance->total_hours = null;
+            $attendance->overtime_minutes = 0;
+        } else {
+            $date = Carbon::parse($attendance->date)->format('Y-m-d');
+
+            $checkInDateTime = Carbon::createFromFormat('Y-m-d H:i', $date . ' ' . $request->check_in);
+            $checkOutDateTime = Carbon::createFromFormat('Y-m-d H:i', $date . ' ' . $request->check_out);
+
+            $attendance->check_in = $checkInDateTime->format('H:i:s');
+            $attendance->check_out = $checkOutDateTime->format('H:i:s');
+
+            $this->calculateWorkingHours($attendance);
+        }
+
+        $attendance->save();
+
+        return redirect()->route('attendances.index')->with('success', 'Attendance updated successfully.');
     }
 
-    $attendance->save();
+    // Calculate total hours and overtime for attendance
+    protected function calculateWorkingHours(Attendance $attendance): void
+    {
+        $checkIn = $this->parseTime($attendance->check_in);
+        $checkOut = $this->parseTime($attendance->check_out);
 
-    return redirect()->route('attendances.index')->with('success', 'Attendance updated successfully.');
-}
+        $totalMinutes = 0;
 
-// Calculate total hours and overtime for attendance
-  protected function calculateWorkingHours(Attendance $attendance): void
-{
-    $checkIn = $this->parseTime($attendance->check_in);
-    $checkOut = $this->parseTime($attendance->check_out);
+        if ($checkIn && $checkOut && $checkOut->greaterThanOrEqualTo($checkIn)) {
+            $totalMinutes = $checkOut->diffInMinutes($checkIn);
+        }
 
-    $totalMinutes = 0;
+        $totalHours = max(0, round($totalMinutes / 60, 2));
+        $attendance->total_hours = $totalHours;
 
-    if ($checkIn && $checkOut && $checkOut->greaterThanOrEqualTo($checkIn)) {
-        $totalMinutes = $checkOut->diffInMinutes($checkIn);
+        // Simple overtime: above 8 hours
+        if ($totalHours > 8) {
+            $attendance->overtime_minutes = (int)(($totalHours - 8) * 60);
+        } else {
+            $attendance->overtime_minutes = 0;
+        }
     }
-
-    $totalHours = max(0, round($totalMinutes / 60, 2));
-    $attendance->total_hours = $totalHours;
-
-    // 👇 Simple overtime: above 8 hours
-    if ($totalHours > 8) {
-        $attendance->overtime_minutes = (int)(($totalHours - 8) * 60);
-    } else {
-        $attendance->overtime_minutes = 0;
-    }
-}
-
 
     // Helper to parse time string to Carbon instance
     protected function parseTime(?string $time): ?Carbon

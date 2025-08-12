@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Employee extends Model
 {
-    use SoftDeletes;
-    use HasFactory;
+    use HasFactory, SoftDeletes; // SoftDeletes included here
+
     protected $table = 'employees';
 
     protected $fillable = [
@@ -21,7 +21,9 @@ class Employee extends Model
         'employee_overtime_pay',
     ];
 
-    // An employee has many attendances
+    /**
+     * An employee has many attendances
+     */
     public function attendances()
     {
         return $this->hasMany(\App\Models\Attendance::class, 'employee_id');

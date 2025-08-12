@@ -102,7 +102,7 @@ class PayrollDataTable extends DataTable
             [
                 'data' => 'net_pay',
                 'name' => 'net_pay',
-                'title' => "Today's Pay",
+                'title' => "Net Pay",
                 'searchable' => false,
                 'orderable' => false,
             ],
