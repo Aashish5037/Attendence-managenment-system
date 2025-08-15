@@ -8,17 +8,20 @@ use Illuminate\Support\Carbon;
 
 class PayrollController extends Controller
 {
-    public function index(PayrollDataTable $dataTable)
-    {
-        // Just calculate today's net pay total — no recalculation for all rows
-        $today = Carbon::today()->toDateString();
+  public function index(PayrollDataTable $dataTable)
+{
+    $today = Carbon::today()->toDateString();
 
-        $payrollToday = Payroll::whereDate('period_date', $today)->sum('net_pay');
+    // Sum net_pay where attendance date matches today
+    $payrollToday = Payroll::join('attendances', 'payrolls.attendance_id', '=', 'attendances.id')
+        ->whereDate('attendances.date', $today)
+        ->sum('payrolls.net_pay');
 
-        return $dataTable->render('payrolls.index', [
-            'payrollToday' => $payrollToday,
-        ]);
-    }
+    return $dataTable->render('payrolls.index', [
+        'payrollToday' => $payrollToday,
+    ]);
+}
+
 
     // Still available to call manually when needed (e.g., cron job, command, or observer)
     protected function calculatePayments(Payroll $payroll): void

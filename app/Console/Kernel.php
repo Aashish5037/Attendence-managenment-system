@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Schedule the daily attendance email command at 7am
-       $schedule->command('attendance:send-daily-emails')->dailyAt('07:00');
+     //  $schedule->command('attendance:send-daily-emails')->dailyAt('07:00');
+       $schedule->command('attendance:send-daily-emails')->everyFiveMinutes();
 
     }
 

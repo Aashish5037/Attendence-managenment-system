@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Payroll;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\DataTables\AttendanceDataTable;
@@ -48,12 +49,16 @@ class AttendanceController extends Controller
             $attendance->check_in = $checkInDateTime->format('H:i:s');
             $attendance->check_out = $checkOutDateTime->format('H:i:s');
 
+            // Recalculate total hours and overtime after editing
             $this->calculateWorkingHours($attendance);
         }
 
         $attendance->save();
 
-        return redirect()->route('attendances.index')->with('success', 'Attendance updated successfully.');
+        // Recalculate payroll for the edited attendance
+        $this->updatePayrollFromAttendance($attendance);
+
+        return redirect()->route('attendances.index')->with('success', 'Attendance updated and payroll recalculated.');
     }
 
     // Calculate total hours and overtime for attendance
@@ -83,5 +88,38 @@ class AttendanceController extends Controller
     protected function parseTime(?string $time): ?Carbon
     {
         return $time ? Carbon::createFromFormat('H:i:s', $time) : null;
+    }
+
+    // Update payroll record based on attendance
+    protected function updatePayrollFromAttendance(Attendance $attendance): void
+    {
+        if (!$attendance->employee) {
+            $attendance->load('employee');
+        }
+
+        $employee = $attendance->employee;
+        $date = Carbon::parse($attendance->date)->format('Y-m-d');
+
+        if (!$employee) {
+            return; // No employee found, skip payroll update
+        }
+
+        // Find payroll for the same employee and date
+        $payroll = Payroll::firstOrNew([
+            'employee_id' => $employee->id,
+            'period_date' => $date,
+        ]);
+
+        $payroll->total_hours = $attendance->total_hours ?? 0;
+        $payroll->overtime_minutes = $attendance->overtime_minutes ?? 0;
+
+        $hourlyRate = $employee->salary ? ($employee->salary / 160) : 0; // 160 hours/month assumed
+        $overtimeRate = $hourlyRate * 1.5;
+
+        $payroll->regular_pay = ($payroll->total_hours > 8 ? 8 : $payroll->total_hours) * $hourlyRate;
+        $payroll->overtime_pay = ($payroll->overtime_minutes / 60) * $overtimeRate;
+        $payroll->net_pay = $payroll->regular_pay + $payroll->overtime_pay;
+
+        $payroll->save();
     }
 }

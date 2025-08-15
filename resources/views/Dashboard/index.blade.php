@@ -31,7 +31,7 @@
                             class="flex-shrink-0" />
 
                         <x-info-box
-                            label="Today's Payroll"
+                            label="Today's Total Payroll"
                             :value="'Rs. ' . number_format($payrollToday, 2)"
                             icon="fas fa-money-bill-wave"
                             color="bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-700 dark:to-purple-900"
