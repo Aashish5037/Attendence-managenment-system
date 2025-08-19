@@ -20,6 +20,11 @@ class Payroll extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+   public function attendancesForDate()
+{
+    return $this->hasOne(Attendance::class, 'employee_id', 'employee_id')
+                ->whereColumn('attendances.date', 'payrolls.period_date');
+}
 
    
 }

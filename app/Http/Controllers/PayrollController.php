@@ -13,9 +13,13 @@ class PayrollController extends Controller
     $today = Carbon::today()->toDateString();
 
     // Sum net_pay where attendance date matches today
-    $payrollToday = Payroll::join('attendances', 'payrolls.attendance_id', '=', 'attendances.id')
-        ->whereDate('attendances.date', $today)
-        ->sum('payrolls.net_pay');
+   $payrollToday = Payroll::join('attendances', function ($join) {
+        $join->on('payrolls.employee_id', '=', 'attendances.employee_id')
+             ->on('payrolls.period_date', '=', 'attendances.date');
+    })
+    ->whereDate('attendances.date', $today)
+    ->sum('payrolls.net_pay');
+
 
     return $dataTable->render('payrolls.index', [
         'payrollToday' => $payrollToday,

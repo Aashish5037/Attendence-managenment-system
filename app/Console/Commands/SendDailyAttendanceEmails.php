@@ -30,7 +30,7 @@ class SendDailyAttendanceEmails extends Command
         $date = Carbon::now()->subDay()->toDateString(); // yesterday's date
         Log::info("Starting attendance email job for date: $date");
 
-      //  ------------------ ORIGINAL CODE ------------------
+        //  ------------------ ORIGINAL CODE ------------------
 
         // $employees = Employee::with(['attendances' => function ($query) use ($date) {
         //     $query->where('date', $date);
@@ -45,7 +45,7 @@ class SendDailyAttendanceEmails extends Command
         //     $attendance = $employee->attendances->first();
 
         //                if ($attendance->attendance_status === 'present' && !empty($employee->employee_email)) {
- 
+
         //         try {
         //             $payroll = Payroll::where('employee_id', $employee->id)
         //                 ->where('period_date', $date)
@@ -79,11 +79,12 @@ class SendDailyAttendanceEmails extends Command
         foreach ($employees as $employee) {
             $attendance = $employee->attendances->first();
 
-            if ($attendance && !empty($employee->employee_email)) {
+            if ($attendance && $attendance->attendance_status === 'present' && !empty($employee->employee_email)) {
                 try {
                     $payroll = Payroll::where('employee_id', $employee->id)
                         ->where('period_date', $date)
                         ->first();
+
 
                     Mail::to('aashishkhanal503@gmail.com')
                         ->send(new DailyAttendanceMail($employee, $attendance, $payroll));
@@ -99,5 +100,5 @@ class SendDailyAttendanceEmails extends Command
 
         $this->info("Test daily attendance email sent.");
         Log::info("Finished test attendance email job for date: $date");
-     }
+    }
 }
