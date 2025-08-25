@@ -13,47 +13,45 @@ class AttendanceFactory extends Factory
 
     public function definition(): array
     {
-        // Randomly decide if the attendance is present or absent
-        $isPresent = $this->faker->boolean(80); // 80% chance present, 20% absent
+        // 80% present, 20% absent
+        $isPresent = $this->faker->boolean(80);
 
         if ($isPresent) {
-            // Random check-in between 08:00 and 10:00
-            $checkInHour = $this->faker->numberBetween(8, 10);
-            $checkInMinute = $this->faker->numberBetween(0, 59);
-            $checkIn = sprintf('%02d:%02d:00', $checkInHour, $checkInMinute);
+            // Random check-in time between 08:00 and 10:00
+            $checkIn = Carbon::today()
+                ->setHour($this->faker->numberBetween(8, 10))
+                ->setMinute($this->faker->numberBetween(0, 59))
+                ->setSecond(0);
 
             // Check-out 8 to 10 hours later
-            $checkOutHour = $checkInHour + $this->faker->numberBetween(8, 10);
-            $checkOutMinute = $this->faker->numberBetween(0, 59);
-            $checkOut = sprintf('%02d:%02d:00', $checkOutHour, $checkOutMinute);
+            $checkOut = (clone $checkIn)->addHours($this->faker->numberBetween(8, 10))
+                                        ->addMinutes($this->faker->numberBetween(0, 59));
 
-            // Calculate total hours as decimal
-            $in = Carbon::createFromTimeString($checkIn);
-            $out = Carbon::createFromTimeString($checkOut);
-            $totalHours = $in->diffInMinutes($out) / 60;
+            // Calculate total hours (decimal)
+            $totalHours = $checkIn->diffInMinutes($checkOut) / 60;
 
             return [
-                'employee_id' => Employee::inRandomOrder()->value('id') ?? 1,
-                'device_id' => 'DEVICE-001',
-                'date' => now()->toDateString(),
-                'check_in' => $checkIn,
-                'check_out' => $checkOut,
-                'total_hours' => round($totalHours, 2),
-                'overtime_minutes' => 0,
-                'attendance_status' => 'present', // new status column
-            ];
-        } else {
-            // Absent - all times null
-            return [
-                'employee_id' => Employee::inRandomOrder()->value('id') ?? 1,
-                'device_id' => 'DEVICE-001',
-                'date' => now()->toDateString(),
-                'check_in' => null,
-                'check_out' => null,
-                'total_hours' => null,
-                'overtime_minutes' => 0,
-                'attendance_status' => 'absent', // new status column
+                'employee_id'       => Employee::inRandomOrder()->value('id') ?? 1,
+                'device_id'         => 'DEVICE-001',
+                'date'              => $checkIn->toDateString(),
+                'check_in'          => $checkIn->format('H:i:s'),
+                'check_out'         => $checkOut->format('H:i:s'),
+                'total_hours'       => round($totalHours, 2),
+                'overtime_minutes'  => max(0, (int)(($totalHours - 8) * 60)), // Only if >8 hrs
+                'attendance_status' => 'present',
             ];
         }
+
+        // Absent
+        return [
+            'employee_id'       => Employee::inRandomOrder()->value('id') ?? 1,
+            'device_id'         => 'DEVICE-001',
+            'date'              => now()->toDateString(),
+            'check_in'          => null,
+            'check_out'         => null,
+            'total_hours'       => 0,
+            'overtime_minutes'  => 0,
+            'attendance_status' => 'absent',
+        ];
     }
 }

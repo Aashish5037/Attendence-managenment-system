@@ -10,21 +10,20 @@ use App\DataTables\AttendanceDataTable;
 
 class AttendanceController extends Controller
 {
-    // Show the attendance list with DataTable
+    // List attendances
     public function index(AttendanceDataTable $dataTable)
     {
         return $dataTable->render('attendances.index');
     }
 
-    // Show edit form for a single attendance record
+    // Edit attendance
     public function edit(Attendance $attendance)
     {
         $attendance->load('employee');
-
         return view('attendances.edit', compact('attendance'));
     }
 
-    // Update attendance record after edit
+    // Update attendance
     public function update(Request $request, Attendance $attendance)
     {
         $request->validate([
@@ -38,73 +37,41 @@ class AttendanceController extends Controller
         if ($request->status === 'absent') {
             $attendance->check_in = null;
             $attendance->check_out = null;
-            $attendance->total_hours = null;
+            $attendance->total_hours = 0;
             $attendance->overtime_minutes = 0;
         } else {
             $date = Carbon::parse($attendance->date)->format('Y-m-d');
 
-            $checkInDateTime = Carbon::createFromFormat('Y-m-d H:i', $date . ' ' . $request->check_in);
-            $checkOutDateTime = Carbon::createFromFormat('Y-m-d H:i', $date . ' ' . $request->check_out);
+            $checkIn = Carbon::createFromFormat('Y-m-d H:i', $date . ' ' . $request->check_in);
+            $checkOut = Carbon::createFromFormat('Y-m-d H:i', $date . ' ' . $request->check_out);
 
-            $attendance->check_in = $checkInDateTime->format('H:i:s');
-            $attendance->check_out = $checkOutDateTime->format('H:i:s');
+            if ($checkOut->lessThanOrEqualTo($checkIn)) {
+                $checkOut->addDay(); // handle overnight
+            }
 
-            // Recalculate total hours and overtime after editing
-            $this->calculateWorkingHours($attendance);
+            $minutes = $checkOut->diffInMinutes($checkIn);
+            $attendance->check_in = $checkIn->format('H:i');
+            $attendance->check_out = $checkOut->format('H:i');
+            $attendance->total_hours = round($minutes / 60, 2);
+            $attendance->overtime_minutes = $attendance->total_hours > 8 ? (int)(($attendance->total_hours - 8) * 60) : 0;
         }
 
         $attendance->save();
 
-        // Recalculate payroll for the edited attendance
+        // Update payroll
         $this->updatePayrollFromAttendance($attendance);
 
         return redirect()->route('attendances.index')->with('success', 'Attendance updated and payroll recalculated.');
     }
 
-    // Calculate total hours and overtime for attendance
-    protected function calculateWorkingHours(Attendance $attendance): void
-    {
-        $checkIn = $this->parseTime($attendance->check_in);
-        $checkOut = $this->parseTime($attendance->check_out);
-
-        $totalMinutes = 0;
-
-        if ($checkIn && $checkOut && $checkOut->greaterThanOrEqualTo($checkIn)) {
-            $totalMinutes = $checkOut->diffInMinutes($checkIn);
-        }
-
-        $totalHours = max(0, round($totalMinutes / 60, 2));
-        $attendance->total_hours = $totalHours;
-
-        // Simple overtime: above 8 hours
-        if ($totalHours > 8) {
-            $attendance->overtime_minutes = (int)(($totalHours - 8) * 60);
-        } else {
-            $attendance->overtime_minutes = 0;
-        }
-    }
-
-    // Helper to parse time string to Carbon instance
-    protected function parseTime(?string $time): ?Carbon
-    {
-        return $time ? Carbon::createFromFormat('H:i:s', $time) : null;
-    }
-
-    // Update payroll record based on attendance
+    // Payroll recalculation
     protected function updatePayrollFromAttendance(Attendance $attendance): void
     {
-        if (!$attendance->employee) {
-            $attendance->load('employee');
-        }
-
         $employee = $attendance->employee;
+        if (!$employee) return;
+
         $date = Carbon::parse($attendance->date)->format('Y-m-d');
 
-        if (!$employee) {
-            return; // No employee found, skip payroll update
-        }
-
-        // Find payroll for the same employee and date
         $payroll = Payroll::firstOrNew([
             'employee_id' => $employee->id,
             'period_date' => $date,
@@ -113,7 +80,7 @@ class AttendanceController extends Controller
         $payroll->total_hours = $attendance->total_hours ?? 0;
         $payroll->overtime_minutes = $attendance->overtime_minutes ?? 0;
 
-        $hourlyRate = $employee->salary ? ($employee->salary / 160) : 0; // 160 hours/month assumed
+        $hourlyRate = $employee->salary ? ($employee->salary / 160) : 0; // 160 hrs/month
         $overtimeRate = $hourlyRate * 1.5;
 
         $payroll->regular_pay = ($payroll->total_hours > 8 ? 8 : $payroll->total_hours) * $hourlyRate;

@@ -24,12 +24,12 @@ class AttendanceDataTable extends DataTable
                 $query->whereHas('employee', function ($q) use ($keyword) {
                     $q->where('employee_name', 'like', "%{$keyword}%");
                 });
-            })
-            ->addColumn('action', function ($attendance) {
-                return '<a href="' . route('attendances.edit', $attendance->id) . '" class="btn btn-sm btn-primary">Edit</a>';
+            });
+            //  ->addColumn('action', function ($attendance) {
+            //     return '<a href="' . route('attendances.edit', $attendance->id) . '" class="btn btn-sm btn-primary">Edit</a>';
                 
-            })
-            ->rawColumns(['action']);
+            // })
+            // ->rawColumns(['action']);
     }
 
 
@@ -55,7 +55,7 @@ class AttendanceDataTable extends DataTable
         return $this->builder()
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->addAction(['width' => '120px', 'printable' => false])
+           // ->addAction(['width' => '120px', 'printable' => false])
             ->parameters([
                 'dom' => 'Bfrtip',
                 'buttons' => [

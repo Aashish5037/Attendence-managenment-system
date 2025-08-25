@@ -89,6 +89,7 @@ $payrollToday = Payroll::whereIn('employee_id', $employeeIdsToday)->sum('net_pay
                 'hasData' => $totalEmployees > 0,
                 'attendanceRate' => $totalEmployees > 0 ? round(($presentCount / $totalEmployees) * 100, 1) : 0,
                 'absenceRate' => $totalEmployees > 0 ? round(($absentCount / $totalEmployees) * 100, 1) : 0,
+                
             ]);
         } catch (\Exception $e) {
             Log::error('Dashboard error: ' . $e->getMessage());
